@@ -12,9 +12,30 @@ import { protect } from "./middleware/authMiddleware.js";
 const app = express();
 
 // Middleware
-// CORS configuration - allow frontend URL from environment variable
+// CORS configuration - allow frontend URLs (production + preview deployments)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://felicity-temp.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow exact matches
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Allow any vercel.app preview URLs
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']

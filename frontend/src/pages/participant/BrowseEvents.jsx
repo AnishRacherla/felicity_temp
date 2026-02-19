@@ -103,14 +103,19 @@ function BrowseEvents() {
    * FORMAT DATE
    */
   const formatDate = (dateString) => {
+    const date = new Date(dateString);
     const options = { 
       year: 'numeric', 
       month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     };
-    return new Date(dateString).toLocaleDateString('en-IN', options);
+    const dateStr = date.toLocaleDateString('en-IN', options);
+    const timeStr = date.toLocaleTimeString('en-IN', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+    return `${dateStr}, ${timeStr}`;
   };
 
   return (

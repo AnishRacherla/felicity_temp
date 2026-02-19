@@ -45,7 +45,9 @@ Copy these exact values:
 - [ ] Output Directory: `dist` (auto-detected)
 
 ### Environment Variables (Add in Vercel)
-- [ ] `VITE_API_URL` - Your Render backend URL (e.g., `https://your-backend-name.onrender.com`)
+- [ ] `VITE_API_URL` = `https://felicity-temp.onrender.com`
+
+**Note:** Make sure this is set in Vercel > Settings > Environment Variables, then redeploy!
 
 ### After Deployment
 - [ ] Copy frontend URL (e.g., `https://your-project.vercel.app`)

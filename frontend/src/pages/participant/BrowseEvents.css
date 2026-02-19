@@ -11,7 +11,7 @@
 /* Header */
 .page-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 }
 
 .page-header h1 {
@@ -30,7 +30,7 @@
 
 /* Trending Section */
 .trending-section {
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .trending-section h2 {
@@ -94,7 +94,7 @@
 
 /* Search and Filters */
 .search-filter-section {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .search-bar {
