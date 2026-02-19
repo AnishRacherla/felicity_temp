@@ -25,7 +25,7 @@
 }
 
 .event-header h1 {
-  color: #1f2937;
+  color: #e5e7eb;
   margin: 10px 0;
   font-size: 32px;
 }
@@ -45,8 +45,8 @@
 }
 
 .status-badge.draft {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(139, 157, 255, 0.15);
+  color: #9ca3af;
 }
 
 .status-badge.published {
@@ -60,8 +60,8 @@
 }
 
 .status-badge.cancelled {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 .status-badge.confirmed {
@@ -70,8 +70,8 @@
 }
 
 .status-badge.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(139, 157, 255, 0.15);
+  color: #9ca3af;
 }
 
 .type-badge {
@@ -109,7 +109,7 @@
 }
 
 .stat-value {
-  color: #1f2937;
+  color: #8b9dff;
   font-size: 36px;
   font-weight: 700;
   margin: 0 0 8px 0;
@@ -132,7 +132,7 @@
 }
 
 .event-info-section h2 {
-  color: #1f2937;
+  color: #e5e7eb;
   font-size: 20px;
   margin: 0 0 20px 0;
 }
@@ -151,7 +151,7 @@
 }
 
 .info-item p {
-  color: #1f2937;
+  color: #e5e7eb;
   margin: 0;
   line-height: 1.6;
 }
@@ -164,8 +164,8 @@
 }
 
 .tag {
-  background: #f3f4f6;
-  color: #4b5563;
+  background: rgba(139, 157, 255, 0.15);
+  color: #a5b4fc;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 13px;
@@ -190,7 +190,7 @@
 }
 
 .registrations-header h2 {
-  color: #1f2937;
+  color: #e5e7eb;
   font-size: 20px;
   margin: 0;
 }
@@ -308,7 +308,7 @@
 }
 
 .filter-buttons button:hover {
-  background: #f9fafb;
+  background: rgba(139, 157, 255, 0.2);
 }
 
 .filter-buttons button.active {
@@ -354,29 +354,29 @@ table {
 }
 
 thead {
-  background: #f9fafb;
+  background: rgba(139, 157, 255, 0.1);
 }
 
 th {
   text-align: left;
   padding: 12px;
-  color: #6b7280;
+  color: #e5e7eb;
   font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid rgba(139, 157, 255, 0.2);
 }
 
 td {
   padding: 16px 12px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #1f2937;
+  border-bottom: 1px solid rgba(139, 157, 255, 0.1);
+  color: #e5e7eb;
   font-size: 14px;
 }
 
 tbody tr:hover {
-  background: #f9fafb;
+  background: rgba(139, 157, 255, 0.05);
 }
 
 .payment-badge {
@@ -393,13 +393,13 @@ tbody tr:hover {
 }
 
 .payment-badge.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(139, 157, 255, 0.15);
+  color: #9ca3af;
 }
 
 .payment-badge.rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 /* Action Buttons in Table */

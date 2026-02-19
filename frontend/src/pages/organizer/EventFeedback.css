@@ -14,7 +14,7 @@
 }
 
 .feedback-header h2 {
-  color: #1f2937;
+  color: #e5e7eb;
   font-size: 1.8rem;
   margin: 0;
 }
@@ -58,7 +58,7 @@
 }
 
 .overall-rating h3 {
-  color: #374151;
+  color: #e5e7eb;
   margin-bottom: 20px;
   font-size: 1.2rem;
 }
@@ -103,7 +103,7 @@
 }
 
 .rating-distribution h3 {
-  color: #374151;
+  color: #e5e7eb;
   margin-bottom: 20px;
   font-size: 1.2rem;
 }
@@ -117,7 +117,7 @@
 
 .rating-label {
   width: 70px;
-  color: #4b5563;
+  color: #9ca3af;
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -125,7 +125,7 @@
 .distribution-bar {
   flex-grow: 1;
   height: 28px;
-  background: #f3f4f6;
+  background: #0f1419;
   border-radius: 6px;
   position: relative;
   overflow: hidden;
@@ -142,7 +142,7 @@
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: #1f2937;
+  color: #e5e7eb;
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -153,7 +153,7 @@
 }
 
 .category-averages h3 {
-  color: #374151;
+  color: #e5e7eb;
   margin-bottom: 20px;
   font-size: 1.2rem;
 }
@@ -165,11 +165,11 @@
 }
 
 .category-card {
-  background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+  background: rgba(139, 157, 255, 0.1);
   padding: 20px;
   border-radius: 10px;
   text-align: center;
-  border: 2px solid #e5e7eb;
+  border: 2px solid rgba(139, 157, 255, 0.2);
   transition: all 0.3s;
 }
 
@@ -180,7 +180,7 @@
 
 .category-name {
   display: block;
-  color: #1f2937;
+  color: #e5e7eb;
   font-weight: 600;
   margin-bottom: 10px;
   font-size: 1rem;
@@ -233,7 +233,7 @@
   align-items: center;
   margin-bottom: 15px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #f3f4f6;
+  border-bottom: 2px solid rgba(139, 157, 255, 0.2);
 }
 
 .feedback-rating {
@@ -258,7 +258,7 @@
 }
 
 .feedback-text p {
-  color: #374151;
+  color: #e5e7eb;
   line-height: 1.6;
   font-size: 1rem;
   margin: 0;
@@ -267,12 +267,12 @@
 .feedback-categories {
   margin-bottom: 15px;
   padding: 15px;
-  background: #f9fafb;
+  background: rgba(139, 157, 255, 0.05);
   border-radius: 8px;
 }
 
 .feedback-categories h4 {
-  color: #1f2937;
+  color: #e5e7eb;
   font-size: 0.95rem;
   margin-bottom: 10px;
 }
@@ -286,7 +286,7 @@
 .category-item {
   display: flex;
   justify-content: space-between;
-  color: #4b5563;
+  color: #9ca3af;
   font-size: 0.9rem;
 }
 
@@ -304,13 +304,13 @@
 }
 
 .feedback-suggestions h4 {
-  color: #92400e;
+  color: #e5e7eb;
   font-size: 0.95rem;
   margin-bottom: 8px;
 }
 
 .feedback-suggestions p {
-  color: #78350f;
+  color: #9ca3af;
   line-height: 1.5;
   margin: 0;
   font-size: 0.95rem;

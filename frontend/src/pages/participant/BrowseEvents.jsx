@@ -193,77 +193,146 @@ function BrowseEvents() {
       {/* Events Grid */}
       {loading ? (
         <div className="loading-spinner">
-          <p>Loading events...</p>
+          <div className="spinner-icon">⏳</div>
+          <p>Loading amazing events...</p>
         </div>
       ) : events.length === 0 ? (
         <div className="no-events">
-          <p>No events found. Try adjusting your filters.</p>
+          <div className="no-events-icon">🎭</div>
+          <h3>No Events Found</h3>
+          <p>Try adjusting your filters or check back later for new events!</p>
         </div>
       ) : (
-        <div className="events-grid">
-          {events.map((event) => (
-            <div 
-              key={event._id} 
-              className="event-card"
-              onClick={() => handleEventClick(event._id)}
-            >
-              {/* Event Type Badge */}
-              <div className="event-badges">
-                <span className={`badge ${event.eventType.toLowerCase()}`}>
-                  {event.eventType}
-                </span>
-                <span className="badge eligibility">
-                  {event.eligibility.replace('_', ' ')}
-                </span>
-              </div>
+        <>
+          {/* Featured Events Section */}
+          {events.length > 0 && (
+            <div className="featured-section">
+              <h2 className="section-title">🌟 Featured Events</h2>
+              <div className="featured-grid">
+                {events.slice(0, 3).map((event) => (
+                  <div 
+                    key={event._id} 
+                    className="featured-card"
+                    onClick={() => handleEventClick(event._id)}
+                  >
+                    <div className="featured-card-gradient"></div>
+                    <div className="featured-content">
+                      <div className="featured-badges">
+                        <span className={`featured-badge ${event.eventType.toLowerCase()}`}>
+                          {event.eventType}
+                        </span>
+                      </div>
+                      
+                      <h3 className="featured-title">{event.eventName}</h3>
+                      
+                      <p className="featured-description">
+                        {event.description.substring(0, 120)}
+                        {event.description.length > 120 && '...'}
+                      </p>
 
-              {/* Event Content */}
-              <h3 className="event-name">{event.eventName}</h3>
-              
-              <p className="event-description">
-                {event.description.substring(0, 100)}
-                {event.description.length > 100 && '...'}
-              </p>
+                      <div className="featured-organizer">
+                        <span className="organizer-icon">🎯</span>
+                        <span className="organizer-name">
+                          {event.organizer?.organizerName || 'Unknown'}
+                        </span>
+                        {event.organizer?.category && (
+                          <span className="organizer-category"> • {event.organizer.category}</span>
+                        )}
+                      </div>
 
-              {/* Organizer */}
-              <p className="event-organizer">
-                by {event.organizer?.organizerName || 'Unknown'}
-                {event.organizer?.category && ` • ${event.organizer.category}`}
-              </p>
-
-              {/* Event Details */}
-              <div className="event-details">
-                <div className="detail-item">
-                  <span className="icon">📅</span>
-                  <span>{formatDate(event.eventStartDate)}</span>
-                </div>
-                
-                {event.registrationFee > 0 && (
-                  <div className="detail-item fee">
-                    <span className="icon">₹</span>
-                    <span>₹{event.registrationFee}</span>
+                      <div className="featured-footer">
+                        <div className="featured-info">
+                          <span className="info-icon">📅</span>
+                          <span>{formatDate(event.eventStartDate)}</span>
+                        </div>
+                        {event.registrationFee > 0 ? (
+                          <div className="featured-price">₹{event.registrationFee}</div>
+                        ) : (
+                          <div className="featured-free">FREE</div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
-
-                {event.registrationLimit && (
-                  <div className="detail-item">
-                    <span className="icon">👥</span>
-                    <span>{event.currentRegistrations}/{event.registrationLimit}</span>
-                  </div>
-                )}
+                ))}
               </div>
-
-              {/* Tags */}
-              {event.tags && event.tags.length > 0 && (
-                <div className="event-tags">
-                  {event.tags.slice(0, 3).map((tag, index) => (
-                    <span key={index} className="tag">#{tag}</span>
-                  ))}
-                </div>
-              )}
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* All Events Section */}
+          <div className="all-events-section">
+            <h2 className="section-title">📚 All Events ({events.length})</h2>
+            <div className="events-modern-grid">
+              {events.map((event) => (
+                <div 
+                  key={event._id} 
+                  className="modern-event-card"
+                  onClick={() => handleEventClick(event._id)}
+                >
+                  <div className="card-header">
+                    <div className="card-badges">
+                      <span className={`modern-badge ${event.eventType.toLowerCase()}`}>
+                        {event.eventType}
+                      </span>
+                    </div>
+                    <div className="card-eligibility">
+                      {event.eligibility.replace('_', ' ')}
+                    </div>
+                  </div>
+
+                  <div className="card-body">
+                    <h3 className="card-title">{event.eventName}</h3>
+                    
+                    <p className="card-description">
+                      {event.description.substring(0, 90)}
+                      {event.description.length > 90 && '...'}
+                    </p>
+
+                    <div className="card-organizer-info">
+                      <span className="org-label">Organized by</span>
+                      <span className="org-name">
+                        {event.organizer?.organizerName || 'Unknown'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="card-footer">
+                    <div className="footer-details">
+                      <div className="detail-box">
+                        <span className="detail-icon">📅</span>
+                        <span className="detail-text">{formatDate(event.eventStartDate)}</span>
+                      </div>
+                      
+                      {event.registrationLimit && (
+                        <div className="detail-box">
+                          <span className="detail-icon">👥</span>
+                          <span className="detail-text">
+                            {event.currentRegistrations}/{event.registrationLimit}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="footer-price">
+                      {event.registrationFee > 0 ? (
+                        <span className="price-amount">₹{event.registrationFee}</span>
+                      ) : (
+                        <span className="price-free">FREE</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {event.tags && event.tags.length > 0 && (
+                    <div className="card-tags">
+                      {event.tags.slice(0, 3).map((tag, index) => (
+                        <span key={index} className="modern-tag">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -92,73 +92,73 @@ function EditEvent() {
   };
 
   if (loading) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading event...</div>;
+    return <div style={{ padding: '40px', textAlign: 'center', color: '#e5e7eb', background: '#0f1419', minHeight: '100vh' }}>Loading event...</div>;
   }
 
   return (
-    <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto', minHeight: '100vh', background: '#0f1419' }}>
       <div style={{ marginBottom: '30px' }}>
-        <h1>Edit Event</h1>
-        <p style={{ color: '#666' }}>Update event details</p>
+        <h1 style={{ color: '#e5e7eb' }}>Edit Event</h1>
+        <p style={{ color: '#9ca3af' }}>Update event details</p>
       </div>
 
       {error && (
-        <div style={{ background: '#fee', padding: '15px', borderRadius: '6px', color: '#c00', marginBottom: '20px' }}>
+        <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '15px', borderRadius: '6px', color: '#ef4444', marginBottom: '20px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Basic Details */}
-        <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
-          <h2>Basic Details</h2>
+        <div style={{ background: '#1a2332', padding: '24px', borderRadius: '8px', marginBottom: '24px', border: '1px solid rgba(139, 157, 255, 0.2)' }}>
+          <h2 style={{ marginTop: 0, color: '#e5e7eb' }}>Basic Details</h2>
           
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Event Name *</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Event Name *</label>
             <input
               type="text"
               name="eventName"
               value={formData.eventName}
               onChange={handleChange}
               required
-              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb' }}
             />
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Description *</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Description *</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               required
               rows="4"
-              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb' }}
             />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Event Type *</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Event Type *</label>
               <select
                 name="eventType"
                 value={formData.eventType}
                 onChange={handleChange}
                 disabled
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd', background: '#e5e7eb', cursor: 'not-allowed' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#9ca3af', cursor: 'not-allowed', opacity: 0.7 }}
               >
                 <option value="NORMAL">Normal Event</option>
                 <option value="MERCHANDISE">Merchandise</option>
               </select>
-              <small style={{ color: '#666' }}>Event type cannot be changed</small>
+              <small style={{ color: '#9ca3af' }}>Event type cannot be changed</small>
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Eligibility *</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Eligibility *</label>
               <select
                 name="eligibility"
                 value={formData.eligibility}
                 onChange={handleChange}
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb' }}
               >
                 <option value="ALL">All Participants</option>
                 <option value="IIIT_ONLY">IIIT Students Only</option>
@@ -169,74 +169,74 @@ function EditEvent() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Event Start Date *</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Event Start Date *</label>
               <input
                 type="datetime-local"
                 name="eventStartDate"
                 value={formData.eventStartDate}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb', colorScheme: 'dark' }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Event End Date *</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Event End Date *</label>
               <input
                 type="datetime-local"
                 name="eventEndDate"
                 value={formData.eventEndDate}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb', colorScheme: 'dark' }}
               />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '20px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Registration Deadline *</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Registration Deadline *</label>
               <input
                 type="datetime-local"
                 name="registrationDeadline"
                 value={formData.registrationDeadline}
                 onChange={handleChange}
                 required
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb', colorScheme: 'dark' }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Registration Limit</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Registration Limit</label>
               <input
                 type="number"
                 name="registrationLimit"
                 value={formData.registrationLimit}
                 onChange={handleChange}
                 placeholder="Leave empty for unlimited"
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb' }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Registration Fee (₹)</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Registration Fee (₹)</label>
               <input
                 type="number"
                 name="registrationFee"
                 value={formData.registrationFee}
                 onChange={handleChange}
                 min="0"
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb' }}
               />
             </div>
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Tags (comma-separated)</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#e5e7eb' }}>Tags (comma-separated)</label>
             <input
               type="text"
               name="tags"
               value={formData.tags}
               onChange={handleChange}
               placeholder="e.g., tech, workshop, free"
-              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.2)', background: '#0f1419', color: '#e5e7eb' }}
             />
           </div>
         </div>

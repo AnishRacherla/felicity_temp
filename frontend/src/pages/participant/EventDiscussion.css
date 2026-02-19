@@ -7,7 +7,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f9fafb;
+  background: #0f1419;
 }
 
 .event-discussion.loading {
@@ -21,24 +21,24 @@
   text-align: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid rgba(139, 157, 255, 0.2);
 }
 
 .back-button {
   background: transparent;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(139, 157, 255, 0.3);
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   margin-bottom: 15px;
   font-size: 14px;
-  color: #6b7280;
+  color: #9ca3af;
   transition: all 0.2s;
 }
 
 .back-button:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+  background: rgba(139, 157, 255, 0.1);
+  border-color: rgba(139, 157, 255, 0.5);
 }
 
 .discussion-header h1 {
@@ -99,7 +99,7 @@
 .no-messages {
   text-align: center;
   padding: 60px 20px;
-  color: #6b7280;
+  color: #9ca3af;
   font-size: 1.1rem;
 }
 
@@ -133,8 +133,8 @@
 
 .pinned-badge {
   display: inline-block;
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(139, 157, 255, 0.15);
+  color: #8b9dff;
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -165,7 +165,7 @@
 
 .author-name {
   font-weight: 600;
-  color: #1f2937;
+  color: #e5e7eb;
   font-size: 1rem;  display: flex;
   align-items: center;
   gap: 8px;
@@ -185,7 +185,7 @@
 
 .message-time {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .delete-btn {
@@ -200,27 +200,27 @@
 }
 
 .delete-btn:hover {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.15);
   opacity: 1;
   transform: scale(1.1);
 }
 
 .pin-btn {
   background: transparent;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(139, 157, 255, 0.3);
   padding: 4px 10px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
-  color: #6b7280;
+  color: #9ca3af;
   transition: all 0.2s;
   font-weight: 500;
 }
 
 .pin-btn:hover {
-  background: #fef3c7;
-  border-color: #fbbf24;
-  color: #92400e;
+  background: rgba(139, 157, 255, 0.15);
+  border-color: rgba(139, 157, 255, 0.5);
+  color: #8b9dff;
   transform: translateY(-1px);
 }
 
@@ -231,7 +231,7 @@
 }
 
 .message-content p {
-  color: #374151;
+  color: #e5e7eb;
   font-size: 15px;
   line-height: 1.6;
   margin: 0;
@@ -245,13 +245,13 @@
   display: flex;
   gap: 15px;
   padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(139, 157, 255, 0.2);
 }
 
 .like-btn,
 .reply-btn {
   background: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(139, 157, 255, 0.3);
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -260,12 +260,13 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  color: #9ca3af;
 }
 
 .like-btn:hover,
 .reply-btn:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
+  background: rgba(139, 157, 255, 0.1);
+  border-color: rgba(139, 157, 255, 0.5);
 }
 
 .like-btn.liked {
@@ -283,14 +284,14 @@
 .replies-list {
   margin-top: 15px;
   padding-left: 20px;
-  border-left: 3px solid #e5e7eb;
+  border-left: 3px solid rgba(139, 157, 255, 0.3);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .reply-card {
-  background: #f9fafb;
+  background: rgba(139, 157, 255, 0.05);
   padding: 12px;
   border-radius: 8px;
 }
@@ -305,7 +306,7 @@
 .reply-author {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #374151;
+  color: #e5e7eb;
 }
 
 .reply-time {
@@ -314,7 +315,7 @@
 }
 
 .reply-content {
-  color: #4b5563;
+  color: #d1d5db;
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.5;
@@ -326,18 +327,20 @@
 .reply-input-container {
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(139, 157, 255, 0.2);
 }
 
 .reply-input-container textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(139, 157, 255, 0.3);
   border-radius: 6px;
   font-family: inherit;
   font-size: 0.9rem;
   resize: vertical;
   margin-bottom: 10px;
+  background: #0f1419;
+  color: #e5e7eb;
 }
 
 .reply-input-container textarea:focus {
@@ -393,7 +396,7 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(139, 157, 255, 0.2);
   position: sticky;
   bottom: 0;
 }
@@ -401,12 +404,14 @@
 .new-message-form textarea {
   width: 100%;
   padding: 15px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid rgba(139, 157, 255, 0.3);
   border-radius: 8px;
   font-family: inherit;
   font-size: 1rem;
   resize: vertical;
   transition: all 0.2s;
+  background: #0f1419;
+  color: #e5e7eb;
 }
 
 .new-message-form textarea:focus {
@@ -416,8 +421,9 @@
 }
 
 .new-message-form textarea:disabled {
-  background: #f3f4f6;
+  background: rgba(139, 157, 255, 0.05);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .form-footer {
@@ -501,15 +507,15 @@
 }
 
 .messages-container::-webkit-scrollbar-track {
-  background: #f3f4f6;
+  background: rgba(139, 157, 255, 0.05);
   border-radius: 4px;
 }
 
 .messages-container::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: rgba(139, 157, 255, 0.3);
   border-radius: 4px;
 }
 
 .messages-container::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: rgba(139, 157, 255, 0.5);
 }

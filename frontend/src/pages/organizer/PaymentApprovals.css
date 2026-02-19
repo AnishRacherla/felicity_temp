@@ -15,22 +15,22 @@
 
 .back-btn {
   padding: 0.5rem 1rem;
-  background: #f3f4f6;
+  background: rgba(139, 157, 255, 0.1);
   border: none;
   border-radius: 8px;
-  color: #6b7280;
+  color: #9ca3af;
   cursor: pointer;
   font-weight: 500;
 }
 
 .back-btn:hover {
-  background: #e5e7eb;
+  background: rgba(139, 157, 255, 0.2);
 }
 
 .page-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #e5e7eb;
   margin: 0;
 }
 
@@ -46,11 +46,12 @@
 }
 
 .error-message {
-  background: #fee;
-  color: #c00;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 /* Filter Tabs */
@@ -58,7 +59,7 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid rgba(139, 157, 255, 0.2);
   overflow-x: auto;
 }
 
@@ -107,14 +108,14 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid rgba(139, 157, 255, 0.2);
+  background: rgba(139, 157, 255, 0.05);
 }
 
 .participant-info h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  color: #e5e7eb;
   margin: 0 0 0.25rem 0;
 }
 
@@ -134,8 +135,8 @@
 }
 
 .status-badge.pending_approval {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(139, 157, 255, 0.15);
+  color: #9ca3af;
 }
 
 .status-badge.paid {
@@ -144,8 +145,8 @@
 }
 
 .status-badge.rejected, .status-badge.unpaid {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 .card-body {
@@ -174,7 +175,7 @@
 }
 
 .info-item span {
-  color: #1f2937;
+  color: #e5e7eb;
   font-size: 0.938rem;
 }
 
@@ -182,19 +183,19 @@
 .payment-proof-section {
   margin: 1.5rem 0;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(139, 157, 255, 0.2);
 }
 
 .payment-proof-section strong {
   display: block;
-  color: #374151;
+  color: #e5e7eb;
   margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 .image-container {
   position: relative;
-  background: #f3f4f6;
+  background: #0f1419;
   border-radius: 8px;
   overflow: hidden;
 }

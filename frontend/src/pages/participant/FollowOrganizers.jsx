@@ -164,8 +164,11 @@ function FollowOrganizers() {
 
   if (loading) {
     return (
-      <div className="follow-organizers loading">
-        <p>Loading organizers...</p>
+      <div className="follow-organizers">
+        <div className="loading-spinner">
+          <div className="spinner-icon">⏳</div>
+          <p>Loading amazing organizers...</p>
+        </div>
       </div>
     );
   }
@@ -174,8 +177,8 @@ function FollowOrganizers() {
     <div className="follow-organizers">
       {/* Header */}
       <div className="page-header">
-        <h1>Follow Organizers</h1>
-        <p>Stay updated with your favorite event organizers!</p>
+        <h1>✨ Follow Organizers</h1>
+        <p>Stay connected with your favorite event organizers and never miss their amazing events!</p>
       </div>
 
       {/* Error Message */}
@@ -188,81 +191,183 @@ function FollowOrganizers() {
       {/* Filter Tabs */}
       <div className="filter-tabs">
         <button 
-          className={filter === 'all' ? 'active' : ''}
+          className={`tab-button ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All Organizers ({organizers.length})
+          <span className="tab-icon">🌐</span>
+          <span className="tab-text">All Organizers</span>
+          <span className="tab-count">{organizers.length}</span>
         </button>
         <button 
-          className={filter === 'following' ? 'active' : ''}
+          className={`tab-button ${filter === 'following' ? 'active' : ''}`}
           onClick={() => setFilter('following')}
         >
-          Following ({followedOrganizers.length})
+          <span className="tab-icon">⭐</span>
+          <span className="tab-text">Following</span>
+          <span className="tab-count">{followedOrganizers.length}</span>
         </button>
       </div>
 
-      {/* Organizers Grid */}
+      {/* Organizers Content */}
       {filteredOrganizers.length === 0 ? (
         <div className="no-organizers">
-          <p>{filter === 'following' ? 'You are not following any organizers yet.' : 'No organizers found.'}</p>
+          <div className="no-organizers-icon">
+            {filter === 'following' ? '⭐' : '🎭'}
+          </div>
+          <h3>{filter === 'following' ? 'No Followed Organizers' : 'No Organizers Found'}</h3>
+          <p>
+            {filter === 'following' 
+              ? 'Start following organizers to stay updated with their events!' 
+              : 'Check back later for new event organizers.'}
+          </p>
         </div>
       ) : (
-        <div className="organizers-grid">
-          {filteredOrganizers.map((organizer) => (
-            <div key={organizer._id} className="organizer-card">
-              {/* Organizer Avatar */}
-              <div className="organizer-avatar">
-                <div className="avatar-placeholder">
-                  {organizer.organizerName?.charAt(0).toUpperCase() || 'O'}
-                </div>
-              </div>
+        <>
+          {/* Featured/Following Section - Show followed organizers at top */}
+          {followedOrganizers.length > 0 && filter === 'all' && (
+            <div className="featured-section">
+              <h2 className="section-title">⭐ Your Followed Organizers</h2>
+              <div className="featured-grid">
+                {filteredOrganizers
+                  .filter(org => isFollowing(org._id))
+                  .slice(0, 3)
+                  .map((organizer) => (
+                    <div key={organizer._id} className="featured-card">
+                      <div className="featured-gradient"></div>
+                      
+                      <div className="featured-avatar">
+                        <div className="avatar-circle">
+                          {organizer.organizerName?.charAt(0).toUpperCase() || 'O'}
+                        </div>
+                      </div>
 
-              {/* Organizer Name */}
-              <h3 className="organizer-name">{organizer.organizerName || 'Unknown Organizer'}</h3>
-              
-              {/* Category Badge */}
-              {organizer.category && (
-                <span className="category-badge">
-                  {organizer.category}
-                </span>
-              )}
+                      <div className="featured-content">
+                        <h3 className="featured-name">{organizer.organizerName || 'Unknown Organizer'}</h3>
+                        
+                        {organizer.category && (
+                          <span className="featured-badge">{organizer.category}</span>
+                        )}
 
-              {/* Single Line Info */}
-              <div className="organizer-meta">
-                {organizer.firstName && (
-                  <span className="meta-item">
-                    👤 {organizer.firstName} {organizer.lastName}
-                  </span>
-                )}
-                {organizer.contactEmail && (
-                  <span className="meta-item">
-                    📧 {organizer.contactEmail}
-                  </span>
-                )}
-              </div>
+                        {organizer.description && (
+                          <p className="featured-description">
+                            {organizer.description.length > 100 
+                              ? organizer.description.substring(0, 100) + '...'
+                              : organizer.description}
+                          </p>
+                        )}
 
-              {/* Description */}
-              {organizer.description && (
-                <p className="description">
-                  {organizer.description.length > 80 
-                    ? organizer.description.substring(0, 80) + '...'
-                    : organizer.description
-                  }
-                </p>
-              )}
+                        <div className="featured-info">
+                          {organizer.firstName && (
+                            <div className="info-row">
+                              <span className="info-icon">👤</span>
+                              <span className="info-text">
+                                {organizer.firstName} {organizer.lastName}
+                              </span>
+                            </div>
+                          )}
+                          {organizer.contactEmail && (
+                            <div className="info-row">
+                              <span className="info-icon">📧</span>
+                              <span className="info-text">{organizer.contactEmail}</span>
+                            </div>
+                          )}
+                        </div>
 
-              {/* Follow Button */}
-              <div className="organizer-actions">
-                <button
-                  onClick={() => handleToggleFollow(organizer._id)}
-                  className={`follow-btn ${isFollowing(organizer._id) ? 'following' : ''}`}
-                >
-                  {isFollowing(organizer._id) ? '✓ Following' : '+ Follow'}
-                </button>
+                        <button
+                          onClick={() => handleToggleFollow(organizer._id)}
+                          className="featured-follow-btn following"
+                        >
+                          ✓ Following
+                        </button>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* All Organizers Grid */}
+          <div className="all-organizers-section">
+            <h2 className="section-title">
+              {filter === 'following' ? '⭐ Following' : '🌐 All Organizers'} 
+              ({filteredOrganizers.length})
+            </h2>
+            
+            <div className="organizers-modern-grid">
+              {filteredOrganizers.map((organizer) => (
+                <div key={organizer._id} className="modern-organizer-card">
+                  {/* Card Header with Avatar */}
+                  <div className="card-header">
+                    <div className="modern-avatar">
+                      {organizer.organizerName?.charAt(0).toUpperCase() || 'O'}
+                    </div>
+                    {isFollowing(organizer._id) && (
+                      <div className="following-indicator">
+                        <span>⭐ Following</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="card-body">
+                    <h3 className="card-org-name">
+                      {organizer.organizerName || 'Unknown Organizer'}
+                    </h3>
+                    
+                    {organizer.category && (
+                      <span className="card-category">{organizer.category}</span>
+                    )}
+
+                    {organizer.description && (
+                      <p className="card-description">
+                        {organizer.description.length > 90 
+                          ? organizer.description.substring(0, 90) + '...'
+                          : organizer.description}
+                      </p>
+                    )}
+
+                    <div className="card-meta">
+                      {organizer.firstName && (
+                        <div className="meta-row">
+                          <span className="meta-icon">👤</span>
+                          <span className="meta-text">
+                            {organizer.firstName} {organizer.lastName}
+                          </span>
+                        </div>
+                      )}
+                      {organizer.contactEmail && (
+                        <div className="meta-row">
+                          <span className="meta-icon">📧</span>
+                          <span className="meta-text">{organizer.contactEmail}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Footer with Action */}
+                  <div className="card-footer">
+                    <button
+                      onClick={() => handleToggleFollow(organizer._id)}
+                      className={`modern-follow-btn ${isFollowing(organizer._id) ? 'following' : ''}`}
+                    >
+                      {isFollowing(organizer._id) ? (
+                        <>
+                          <span className="btn-icon">✓</span>
+                          <span>Following</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="btn-icon">+</span>
+                          <span>Follow</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
