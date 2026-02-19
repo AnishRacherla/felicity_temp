@@ -1,0 +1,419 @@
+/* PAYMENT APPROVALS PAGE STYLES */
+
+.payment-approvals {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background: #e5e7eb;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.page-header p {
+  color: #6b7280;
+  margin: 0.25rem 0 0 0;
+}
+
+.loading, .no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.error-message {
+  background: #fee;
+  color: #c00;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+.filter-tabs button {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+}
+
+.filter-tabs button.active {
+  color: #8b9dff;
+}
+
+.filter-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(139, 157, 255, 0.8);
+}
+
+/* Registrations Grid */
+.registrations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 1.5rem;
+}
+
+.registration-card {
+  background: #1a2332;
+  border-radius: 12px;
+  border: 1px solid rgba(139, 157, 255, 0.2);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.participant-info h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.ticket-id {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-badge.pending_approval {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.paid {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.rejected, .status-badge.unpaid {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-item strong {
+  color: #6b7280;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.info-item span {
+  color: #1f2937;
+  font-size: 0.938rem;
+}
+
+/* Payment Proof */
+.payment-proof-section {
+  margin: 1.5rem 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.payment-proof-section strong {
+  display: block;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.image-container {
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  cursor: pointer;
+  display: block;
+}
+
+.view-full-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.view-full-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* Rejection Reason */
+.rejection-reason {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(139, 157, 255, 0.1);
+  border-left: 3px solid rgba(139, 157, 255, 0.4);
+  border-radius: 6px;
+}
+
+.rejection-reason strong {
+  color: #991b1b;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.rejection-reason p {
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Approval Info */
+.approval-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #ecfdf5;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #065f46;
+}
+
+/* Card Actions */
+.card-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.btn-approve, .btn-reject, .btn-cancel {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(139, 157, 255, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-approve {
+  background: rgba(139, 157, 255, 0.15);
+  color: #9ca3af;
+}
+
+.btn-approve:hover:not(:disabled) {
+  background: rgba(139, 157, 255, 0.25);
+  border-color: rgba(139, 157, 255, 0.5);
+}
+
+.btn-reject {
+  background: rgba(139, 157, 255, 0.15);
+  color: #9ca3af;
+}
+
+.btn-reject:hover:not(:disabled) {
+  background: rgba(139, 157, 255, 0.25);
+  border-color: rgba(139, 157, 255, 0.5);
+}
+
+.btn-cancel {
+  background: rgba(139, 157, 255, 0.1);
+  color: #9ca3af;
+  border: 1px solid rgba(139, 157, 255, 0.2);
+}
+
+.btn-cancel:hover {
+  background: rgba(139, 157, 255, 0.2);
+  border-color: rgba(139, 157, 255, 0.3);
+}
+
+.btn-approve:disabled, .btn-reject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #1a2332;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: #1f2937;
+}
+
+.modal-body {
+  margin: 1.5rem 0;
+}
+
+.modal-body p {
+  margin-bottom: 0.75rem;
+  color: #6b7280;
+}
+
+.form-group {
+  margin-top: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  resize: vertical;
+  font-size: 0.938rem;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: rgba(139, 157, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(139, 157, 255, 0.2);
+}
+
+.form-group small {
+  display: block;
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .registrations-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-approvals {
+    padding: 1rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-tabs {
+    overflow-x: scroll;
+  }
+
+  .card-actions, .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-approve, .btn-reject, .btn-cancel {
+    width: 100%;
+  }
+}
