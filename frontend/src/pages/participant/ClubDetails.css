@@ -1,0 +1,89 @@
+.club-details-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.back-btn {
+  border: 1px solid rgba(139, 157, 255, 0.35);
+  background: rgba(139, 157, 255, 0.1);
+  color: #e5e7eb;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.club-header-card {
+  background: #1a2332;
+  border: 1px solid rgba(139, 157, 255, 0.25);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.club-header-card h1 {
+  margin: 0 0 12px 0;
+  color: #e5e7eb;
+}
+
+.club-header-card p {
+  color: #9ca3af;
+  margin: 8px 0;
+}
+
+.club-category {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(139, 157, 255, 0.2);
+  color: #8b9dff;
+  margin-bottom: 10px;
+}
+
+.events-section {
+  margin-bottom: 24px;
+}
+
+.events-section h2 {
+  color: #e5e7eb;
+  margin-bottom: 14px;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.event-card {
+  text-align: left;
+  border: 1px solid rgba(139, 157, 255, 0.25);
+  border-radius: 10px;
+  background: #1a2332;
+  padding: 16px;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+.event-card h4 {
+  margin: 0 0 10px 0;
+}
+
+.event-card p {
+  margin: 0 0 12px 0;
+  color: #9ca3af;
+}
+
+.event-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.loading-state,
+.empty-events {
+  color: #9ca3af;
+}

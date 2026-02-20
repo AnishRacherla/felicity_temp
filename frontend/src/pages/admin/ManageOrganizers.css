@@ -238,6 +238,17 @@
   border: 1px solid rgba(139, 157, 255, 0.3);
 }
 
+.btn-view {
+  background: rgba(139, 157, 255, 0.2);
+  color: #e5e7eb;
+  border: 1px solid rgba(139, 157, 255, 0.4);
+}
+
+.btn-view:hover:not(:disabled) {
+  background: rgba(139, 157, 255, 0.3);
+  border-color: rgba(139, 157, 255, 0.55);
+}
+
 .btn-edit:hover:not(:disabled) {
   background: rgba(139, 157, 255, 0.25);
   border-color: rgba(139, 157, 255, 0.5);

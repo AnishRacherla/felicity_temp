@@ -41,6 +41,7 @@ function Navbar() {
                 <>
                   <Link to="/dashboard">Dashboard</Link>
                   <Link to="/browse-events">Browse Events</Link>
+                  <Link to="/clubs">Clubs</Link>
                   <Link to="/registrations">My Registrations</Link>
                   <Link to="/follow-organizers">Follow Organizers</Link>
                   <Link to="/profile">Profile</Link>

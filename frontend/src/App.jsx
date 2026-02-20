@@ -23,6 +23,8 @@ import BrowseEvents from './pages/participant/BrowseEvents';
 import EventDetails from './pages/participant/EventDetails';
 import MyRegistrations from './pages/participant/MyRegistrations';
 import FollowOrganizers from './pages/participant/FollowOrganizers';
+import Clubs from './pages/participant/Clubs';
+import ClubDetails from './pages/participant/ClubDetails';
 import ParticipantProfile from './pages/participant/ParticipantProfile';
 import EventDiscussion from './pages/participant/EventDiscussion';
 import OrganizerDashboard from './pages/organizer/OrganizerDashboard';
@@ -36,6 +38,7 @@ import PaymentApprovals from './pages/organizer/PaymentApprovals';
 import EventFeedback from './pages/organizer/EventFeedback';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageOrganizers from './pages/admin/ManageOrganizers';
+import AdminOrganizerDetails from './pages/admin/AdminOrganizerDetails';
 import PasswordResetRequests from './pages/admin/PasswordResetRequests';
 import DebugAuth from './pages/DebugAuth';
 
@@ -136,6 +139,24 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['participant']}>
                     <FollowOrganizers />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/clubs" 
+                element={
+                  <ProtectedRoute allowedRoles={['participant']}>
+                    <Clubs />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/clubs/:organizerId" 
+                element={
+                  <ProtectedRoute allowedRoles={['participant']}>
+                    <ClubDetails />
                   </ProtectedRoute>
                 } 
               />
@@ -254,6 +275,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <ManageOrganizers />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/manage-organizers/:id" 
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminOrganizerDetails />
                   </ProtectedRoute>
                 } 
               />

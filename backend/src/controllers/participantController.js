@@ -224,6 +224,7 @@ export const getOrganizers = async (req, res) => {
 export const getOrganizerDetails = async (req, res) => {
   try {
     const { organizerId } = req.params;
+    const now = new Date();
 
     const organizer = await User.findOne({
       _id: organizerId,
@@ -235,23 +236,27 @@ export const getOrganizerDetails = async (req, res) => {
       return res.status(404).json({ message: "Organizer not found" });
     }
 
-    // Get organizer's published events
-    const upcomingEvents = await Event.find({
+    const allEvents = await Event.find({
       organizer: organizerId,
-      status: "PUBLISHED",
-      eventStartDate: { $gte: new Date() },
-    }).select("eventName eventType eventStartDate registrationFee");
-
-    const pastEvents = await Event.find({
-      organizer: organizerId,
-      status: { $in: ["COMPLETED", "CLOSED"] },
+      status: { $in: ["PUBLISHED", "ONGOING", "COMPLETED", "CLOSED"] },
     })
-      .select("eventName eventType eventStartDate")
-      .limit(10);
+      .select("eventName description eventType eventStartDate eventEndDate registrationFee status currentRegistrations")
+      .sort({ eventStartDate: -1 });
+
+    const presentEvents = allEvents.filter(
+      (event) => event.eventStartDate <= now && event.eventEndDate >= now
+    );
+
+    const upcomingEvents = allEvents.filter((event) => event.eventStartDate > now);
+
+    const pastEvents = allEvents.filter((event) => event.eventEndDate < now);
 
     res.json({
       success: true,
       organizer,
+      count: allEvents.length,
+      events: allEvents,
+      presentEvents,
       upcomingEvents,
       pastEvents,
     });

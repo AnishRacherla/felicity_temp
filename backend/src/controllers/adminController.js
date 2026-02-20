@@ -110,6 +110,7 @@ export const getAllOrganizers = async (req, res) => {
  */
 export const getOrganizerDetails = async (req, res) => {
   try {
+    const now = new Date();
     const organizer = await User.findOne({
       _id: req.params.id,
       role: ROLES.ORGANIZER,
@@ -121,11 +122,22 @@ export const getOrganizerDetails = async (req, res) => {
 
     // Get organizer's event stats
     const Event = (await import("../models/Event.js")).default;
-    const events = await Event.find({ organizer: organizer._id });
+    const events = await Event.find({ organizer: organizer._id })
+      .sort({ eventStartDate: -1 })
+      .select(
+        "eventName description eventType status eventStartDate eventEndDate registrationFee currentRegistrations registrationLimit"
+      );
+
+    const presentEvents = events.filter(
+      (event) => event.eventStartDate <= now && event.eventEndDate >= now
+    );
+    const upcomingEvents = events.filter((event) => event.eventStartDate > now);
+    const pastEvents = events.filter((event) => event.eventEndDate < now);
 
     const stats = {
       totalEvents: events.length,
       publishedEvents: events.filter((e) => e.status === "PUBLISHED").length,
+      ongoingEvents: events.filter((e) => e.status === "ONGOING").length,
       completedEvents: events.filter((e) => e.status === "COMPLETED").length,
       totalRegistrations: events.reduce((sum, e) => sum + e.currentRegistrations, 0),
     };
@@ -134,6 +146,10 @@ export const getOrganizerDetails = async (req, res) => {
       success: true,
       organizer,
       stats,
+      events,
+      presentEvents,
+      upcomingEvents,
+      pastEvents,
     });
   } catch (error) {
     res.status(500).json({

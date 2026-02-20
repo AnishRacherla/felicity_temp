@@ -118,6 +118,14 @@ function BrowseEvents() {
     return `${dateStr}, ${timeStr}`;
   };
 
+  const isUpcomingOrOngoing = (event) => {
+    const now = new Date();
+    const eventEnd = new Date(event.eventEndDate);
+    return eventEnd >= now;
+  };
+
+  const featuredEvents = events.filter(isUpcomingOrOngoing).slice(0, 3);
+
   return (
     <div className="browse-events">
       {/* Header */}
@@ -205,11 +213,11 @@ function BrowseEvents() {
       ) : (
         <>
           {/* Featured Events Section */}
-          {events.length > 0 && (
+          {featuredEvents.length > 0 && (
             <div className="featured-section">
               <h2 className="section-title">🌟 Featured Events</h2>
               <div className="featured-grid">
-                {events.slice(0, 3).map((event) => (
+                {featuredEvents.map((event) => (
                   <div 
                     key={event._id} 
                     className="featured-card"

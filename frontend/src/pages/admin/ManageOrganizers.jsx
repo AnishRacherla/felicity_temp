@@ -9,10 +9,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
 import './ManageOrganizers.css';
 
 function ManageOrganizers() {
+  const navigate = useNavigate();
   // State
   const [organizers, setOrganizers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -290,6 +292,13 @@ function ManageOrganizers() {
 
               {/* Actions */}
               <div className="card-actions">
+                <button 
+                  onClick={() => navigate(`/admin/manage-organizers/${org._id}`)}
+                  className="btn btn-view"
+                  title="View organizer details and events"
+                >
+                  👁️ View Club
+                </button>
                 <button 
                   onClick={() => openEditModal(org)}
                   className="btn btn-edit"
