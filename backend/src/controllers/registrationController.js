@@ -92,20 +92,22 @@ export const registerForEvent = async (req, res) => {
     
     await event.save();
 
-    // Send email
-    try {
-      await sendRegistrationEmail({
-        to: req.user.email,
-        participantName: `${req.user.firstName} ${req.user.lastName}`,
-        eventName: event.eventName,
-        ticketId,
-        qrCode,
-        eventDate: event.eventStartDate,
-      });
-    } catch (emailError) {
-      console.error("Email sending failed:", emailError);
-      // Don't fail registration if email fails
-    }
+    // Send email asynchronously (fire-and-forget)
+    setImmediate(async () => {
+      try {
+        await sendRegistrationEmail({
+          to: req.user.email,
+          participantName: `${req.user.firstName} ${req.user.lastName}`,
+          eventName: event.eventName,
+          ticketId,
+          qrCode,
+          eventDate: event.eventStartDate,
+        });
+      } catch (emailError) {
+        console.error("Email sending failed:", emailError);
+        // Email failure doesn't affect registration
+      }
+    });
 
     res.status(201).json({
       success: true,
@@ -155,15 +157,70 @@ export const purchaseMerchandise = async (req, res) => {
       return res.status(400).json({ message: "Already purchased this merchandise" });
     }
 
-    // Check stock
-    if (event.merchandise.stockQuantity <= 0) {
-      return res.status(400).json({ message: "Out of stock" });
+    // Log input for debugging
+    console.log(`[PURCHASE] Event: ${event.eventName}, Size: ${size}, Color: ${color}, Qty: ${quantity}`);
+    console.log(`[PURCHASE] Total Stock: ${event.merchandise?.stockQuantity}, Variants: ${event.merchandise?.variants?.length}`);
+
+    // Check stock - validate against specific variant if available
+    let availableStock = 0;
+    if (event.merchandise?.variants && size && color) {
+      // Find specific variant - try multiple matching strategies
+      let variant = event.merchandise.variants.find(v => v.size === size && v.color === color);
+      
+      // Fallback: try matching by name format "SIZE - COLOR"
+      if (!variant) {
+        const variantName = `${size} - ${color}`;
+        variant = event.merchandise.variants.find(v => v.name === variantName);
+      }
+      
+      if (!variant) {
+        console.log(`[PURCHASE] Variant not found for ${size} - ${color}`);
+        return res.status(400).json({ message: `Variant not found: ${size} - ${color}` });
+      }
+      
+      // Calculate effective stock with fallback
+      availableStock = variant.stock || 0;
+      
+      // If variant has 0 stock but total stockQuantity exists, calculate distributed stock
+      if (availableStock === 0 && event.merchandise?.stockQuantity && event.merchandise.stockQuantity > 0) {
+        const variantIndex = event.merchandise.variants.findIndex(v => 
+          (v.size === size && v.color === color) || v.name === `${size} - ${color}`
+        );
+        const numVariants = event.merchandise.variants.length;
+        const baseStock = Math.floor(event.merchandise.stockQuantity / numVariants);
+        const remainder = event.merchandise.stockQuantity % numVariants;
+        availableStock = variantIndex >= 0 && variantIndex < remainder ? baseStock + 1 : baseStock;
+        console.log(`[PURCHASE] Using fallback: variantIndex=${variantIndex}, baseStock=${baseStock}, remainder=${remainder}, calculated=${availableStock}`);
+      } else {
+        console.log(`[PURCHASE] Using actual stock: ${availableStock}`);
+      }
+      
+      if (availableStock <= 0) {
+        return res.status(400).json({ message: `${size} - ${color} is out of stock` });
+      }
+      
+      if (quantity > availableStock) {
+        return res.status(400).json({ message: `Only ${availableStock} unit(s) available for ${size} - ${color}. You requested ${quantity}.` });
+      }
+    } else {
+      // Fallback to total stock if variants not available
+      availableStock = event.merchandise?.stockQuantity || 0;
+      console.log(`[PURCHASE] No variants/size/color, using total stock: ${availableStock}`);
+      
+      if (availableStock <= 0) {
+        return res.status(400).json({ message: "Out of stock" });
+      }
+      
+      if (quantity > availableStock) {
+        return res.status(400).json({ message: `Only ${availableStock} units available. You requested ${quantity}.` });
+      }
     }
 
     // Check purchase limit
-    if (quantity > event.merchandise.purchaseLimit) {
+    const maxPerPerson = event.merchandise?.purchaseLimit || 1;
+    if (quantity > maxPerPerson) {
       return res.status(400).json({
-        message: `Maximum ${event.merchandise.purchaseLimit} items per person`,
+        message: `Maximum ${maxPerPerson} items per person`,
       });
     }
 

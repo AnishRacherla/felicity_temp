@@ -10,7 +10,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { eventAPI } from '../../services/api';
+import { eventAPI, participantAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './BrowseEvents.css';
 
@@ -23,6 +23,7 @@ function BrowseEvents() {
   const [trendingEvents, setTrendingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [followedOrganizerIds, setFollowedOrganizerIds] = useState([]);
   
   // Filters
   const [search, setSearch] = useState('');
@@ -84,6 +85,27 @@ function BrowseEvents() {
     fetchTrendingEvents();
   }, []);
 
+  useEffect(() => {
+    const fetchFollowedOrganizers = async () => {
+      if (!user || user.role !== 'participant') {
+        setFollowedOrganizerIds([]);
+        return;
+      }
+
+      try {
+        const response = await participantAPI.getProfile();
+        const followed = response.data.profile?.followedOrganizers || [];
+        const ids = followed.map((org) => org?._id).filter(Boolean).map((id) => id.toString());
+        setFollowedOrganizerIds(ids);
+      } catch (err) {
+        console.error('Failed to fetch followed organizers:', err);
+        setFollowedOrganizerIds([]);
+      }
+    };
+
+    fetchFollowedOrganizers();
+  }, [user]);
+
   /**
    * HANDLE SEARCH
    */
@@ -124,7 +146,20 @@ function BrowseEvents() {
     return eventEnd >= now;
   };
 
-  const featuredEvents = events.filter(isUpcomingOrOngoing).slice(0, 3);
+  const followedSet = new Set(followedOrganizerIds);
+  const featuredEvents = events
+    .filter(isUpcomingOrOngoing)
+    .sort((a, b) => {
+      const aFollowed = followedSet.has(a.organizer?._id?.toString());
+      const bFollowed = followedSet.has(b.organizer?._id?.toString());
+
+      if (aFollowed !== bFollowed) {
+        return aFollowed ? -1 : 1;
+      }
+
+      return new Date(a.eventStartDate) - new Date(b.eventStartDate);
+    })
+    .slice(0, 3);
 
   return (
     <div className="browse-events">

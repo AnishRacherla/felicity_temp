@@ -282,12 +282,39 @@
   color: #8b9dff;
   border: 1px solid rgba(139, 157, 255, 0.4);
   font-weight: 600;
+  position: relative;
 }
 
 .action-btn.discussion:hover {
   background: rgba(139, 157, 255, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(139, 157, 255, 0.3);
+}
+
+/* Notification Badge for Discussion Button */
+.action-btn.discussion .notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .action-btn.cancel {

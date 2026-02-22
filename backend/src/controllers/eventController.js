@@ -1,5 +1,6 @@
 import Event from "../models/Event.js";
 import Registration from "../models/Registration.js";
+import { validateCustomForm, validateEventDates } from "../utils/validators.js";
 
 /**
  * Browse all events with filters
@@ -121,19 +122,24 @@ export const getEventDetails = async (req, res) => {
 
     // Check if user is already registered (if logged in)
     let isRegistered = false;
+    let registrationStatus = null;
     if (req.user) {
       const existingRegistration = await Registration.findOne({
         participant: req.user._id,
         event: event._id,
         status: { $in: ["CONFIRMED", "PENDING"] },
       });
-      isRegistered = !!existingRegistration;
+      if (existingRegistration) {
+        isRegistered = true;
+        registrationStatus = existingRegistration.status;
+      }
     }
 
     res.json({
       success: true,
       event,
       isRegistered,
+      registrationStatus,
     });
   } catch (error) {
     res.status(500).json({
@@ -173,6 +179,49 @@ export const createEvent = async (req, res) => {
       });
     }
 
+    if (typeof registrationLimit !== "undefined" && registrationLimit !== null) {
+      if (Number(registrationLimit) <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Registration limit must be greater than 0",
+        });
+      }
+    }
+
+    // Validate dates
+    const dateValidation = validateEventDates(
+      eventStartDate,
+      eventEndDate,
+      registrationDeadline
+    );
+
+    if (!dateValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: dateValidation.message,
+      });
+    }
+
+    // Validate custom form (normal events only)
+    let normalizedCustomForm;
+    if (eventType.toUpperCase() === "NORMAL" && customForm) {
+      try {
+        const formValidation = validateCustomForm(customForm);
+        if (!formValidation.valid) {
+          return res.status(400).json({
+            success: false,
+            message: formValidation.message,
+          });
+        }
+        normalizedCustomForm = formValidation.normalized;
+      } catch (validationError) {
+        return res.status(400).json({
+          success: false,
+          message: validationError.message,
+        });
+      }
+    }
+
     // Create event
     const event = await Event.create({
       eventName,
@@ -186,7 +235,7 @@ export const createEvent = async (req, res) => {
       registrationFee: registrationFee || 0,
       tags,
       organizer: req.user._id,
-      customForm: eventType.toUpperCase() === "NORMAL" ? customForm : undefined,
+      customForm: eventType.toUpperCase() === "NORMAL" ? normalizedCustomForm : undefined,
       merchandise: eventType.toUpperCase() === "MERCHANDISE" ? merchandise : undefined,
       status: "DRAFT",
     });

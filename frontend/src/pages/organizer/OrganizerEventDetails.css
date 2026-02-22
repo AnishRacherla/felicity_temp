@@ -438,6 +438,22 @@ tbody tr:hover {
   border-color: rgba(139, 157, 255, 0.5);
 }
 
+/* Stock Status Badges */
+.status-badge.in-stock {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.low-stock {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.out-of-stock {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .analytics-grid {

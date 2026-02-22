@@ -10,7 +10,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { participantAPI, registrationAPI, feedbackAPI } from '../../services/api';
+import { participantAPI, registrationAPI, feedbackAPI, discussionAPI } from '../../services/api';
 import './MyRegistrations.css';
 
 function MyRegistrations() {
@@ -43,6 +43,9 @@ function MyRegistrations() {
   });
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [feedbackStatus, setFeedbackStatus] = useState({});
+  
+  // Notification counts for each event
+  const [notificationCounts, setNotificationCounts] = useState({});
 
   /**
    * FETCH USER REGISTRATIONS
@@ -70,6 +73,36 @@ function MyRegistrations() {
 
     fetchRegistrations();
   }, []);
+
+  /**
+   * FETCH NOTIFICATION COUNTS FOR ALL EVENTS
+   */
+  useEffect(() => {
+    const fetchNotificationCounts = async () => {
+      if (registrations.length === 0) return;
+      
+      const counts = {};
+      for (const reg of registrations) {
+        if (reg.status === 'CONFIRMED' && reg.event?._id) {
+          try {
+            const eventId = reg.event._id;
+            const res = await discussionAPI.getEventDiscussions(eventId);
+            const currentCount = res.data.discussions?.length || 0;
+            const lastSeenCount = parseInt(localStorage.getItem(`discussion_${eventId}_count`) || '0');
+            
+            if (currentCount > lastSeenCount) {
+              counts[eventId] = currentCount - lastSeenCount;
+            }
+          } catch (err) {
+            console.log('Failed to fetch discussion count for event:', reg.event._id);
+          }
+        }
+      }
+      setNotificationCounts(counts);
+    };
+    
+    fetchNotificationCounts();
+  }, [registrations]);
 
   /**
    * FILTER REGISTRATIONS
@@ -540,11 +573,32 @@ function MyRegistrations() {
                   </button>
                   {registration.status === 'CONFIRMED' && (
                     <button 
-                      onClick={() => navigate(`/events/${registration.event?._id}/discussion`)}
+                      onClick={() => {
+                        const eventId = registration.event?._id;
+                        if (eventId) {
+                          // Mark as seen and clear badge
+                          discussionAPI.getEventDiscussions(eventId).then(res => {
+                            const count = res.data.discussions?.length || 0;
+                            localStorage.setItem(`discussion_${eventId}_count`, count.toString());
+                            console.log(`[MyReg] Marked event ${eventId} as seen: ${count}`);
+                            // Clear badge from state
+                            setNotificationCounts(prev => {
+                              const updated = { ...prev };
+                              delete updated[eventId];
+                              return updated;
+                            });
+                          }).catch(err => console.log('Mark as seen error:', err));
+                        }
+                        navigate(`/events/${eventId}/discussion`);
+                      }}
                       className="action-btn discussion"
                       title="Join event discussion forum"
+                      style={{ position: 'relative' }}
                     >
                       💬 Discussion
+                      {notificationCounts[registration.event?._id] > 0 && (
+                        <span className="notification-badge">{notificationCounts[registration.event?._id]}</span>
+                      )}
                     </button>
                   )}
                   <button 

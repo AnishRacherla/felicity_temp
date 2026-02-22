@@ -82,6 +82,8 @@ function OrganizerEventDetails() {
     try {
       await organizerAPI.approveMerchandisePayment(registrationId);
       alert('Payment approved successfully!');
+      // Refetch both registrations and event details to update stock
+      await fetchEventDetails();
       fetchRegistrations();
     } catch (err) {
       console.error('Error approving payment:', err);
@@ -96,6 +98,8 @@ function OrganizerEventDetails() {
     try {
       await organizerAPI.rejectMerchandisePayment(registrationId, { reason });
       alert('Payment rejected');
+      // Refetch both registrations and event details
+      await fetchEventDetails();
       fetchRegistrations();
     } catch (err) {
       console.error('Error rejecting payment:', err);
@@ -217,6 +221,57 @@ function OrganizerEventDetails() {
           )}
         </div>
       </div>
+
+      {/* Merchandise Stock Information */}
+      {event.eventType === 'MERCHANDISE' && event.merchandise && (
+        <div className="event-info-section">
+          <h2>📦 Merchandise Stock Availability</h2>
+          <div className="info-grid">
+            <div className="info-item">
+              <strong>Total Stock:</strong>
+              <p>{event.merchandise.stockQuantity || 0} units</p>
+            </div>
+            {event.merchandise.variants && event.merchandise.variants.length > 0 && (
+              <div className="info-item" style={{gridColumn: '1 / -1'}}>
+                <strong>Stock by Variant:</strong>
+                <table style={{width: '100%', marginTop: '10px', borderCollapse: 'collapse'}}>
+                  <thead>
+                    <tr>
+                      <th style={{textAlign: 'left', padding: '8px', borderBottom: '2px solid #ddd'}}>Size</th>
+                      <th style={{textAlign: 'left', padding: '8px', borderBottom: '2px solid #ddd'}}>Color</th>
+                      <th style={{textAlign: 'left', padding: '8px', borderBottom: '2px solid #ddd'}}>Stock</th>
+                      <th style={{textAlign: 'left', padding: '8px', borderBottom: '2px solid #ddd'}}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {event.merchandise.variants.map((variant, index) => {
+                      const effectiveStock = variant.stock || (() => {
+                        const numVariants = event.merchandise.variants.length;
+                        const baseStock = Math.floor((event.merchandise.stockQuantity || 0) / numVariants);
+                        const remainder = (event.merchandise.stockQuantity || 0) % numVariants;
+                        return index < remainder ? baseStock + 1 : baseStock;
+                      })();
+                      const stockClass = effectiveStock > 5 ? 'in-stock' : effectiveStock > 0 ? 'low-stock' : 'out-of-stock';
+                      return (
+                        <tr key={index}>
+                          <td style={{padding: '8px', borderBottom: '1px solid #eee'}}>{variant.size || 'N/A'}</td>
+                          <td style={{padding: '8px', borderBottom: '1px solid #eee'}}>{variant.color || 'N/A'}</td>
+                          <td style={{padding: '8px', borderBottom: '1px solid #eee'}}>{effectiveStock} units</td>
+                          <td style={{padding: '8px', borderBottom: '1px solid #eee'}}>
+                            <span className={`status-badge ${stockClass}`}>
+                              {effectiveStock > 5 ? '✓ In Stock' : effectiveStock > 0 ? '⚠ Low Stock' : '✗ Out of Stock'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Registrations Section */}
       <div className="registrations-section">

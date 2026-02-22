@@ -108,6 +108,8 @@ const eventSchema = new mongoose.Schema(
       colors: [String],
       variants: [{
         name: String,
+        size: String,
+        color: String,
         price: Number,
         stock: Number,
       }],

@@ -36,6 +36,8 @@ function EventDiscussion() {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyMessage, setReplyMessage] = useState('');
   const [likingIds, setLikingIds] = useState(new Set());
+  const [isAnnouncement, setIsAnnouncement] = useState(false);
+  const [isOrganizer, setIsOrganizer] = useState(false);
   
   const messagesEndRef = useRef(null);
   const pollIntervalRef = useRef(null);
@@ -69,7 +71,9 @@ function EventDiscussion() {
       console.log('Discussions response:', response.data);
       console.log('Number of discussions:', response.data.discussions?.length);
       console.log('Discussions array:', response.data.discussions);
+      console.log('Backend isOrganizer:', response.data.isOrganizer);
       setDiscussions(response.data.discussions);
+      setIsOrganizer(response.data.isOrganizer || false);
       setError('');
     } catch (err) {
       console.error('Error fetching discussions:', err);
@@ -90,18 +94,21 @@ function EventDiscussion() {
   useEffect(() => {
     fetchDiscussions();
 
-    // Mark as viewed
-    if (event) {
+    // Mark as viewed and update notification count
+    const updateNotificationCount = () => {
       const storageKey = user?.role === 'organizer' 
         ? `discussion_organizer_${eventId}_count` 
         : `discussion_${eventId}_count`;
       
-      // Update the last seen count
+      // Update the last seen count to current discussion count
+      localStorage.setItem(storageKey, discussions.length.toString());
+      console.log(`Updated ${storageKey} to ${discussions.length}`);
+    };
+    
+    // Update notification count after discussions load
+    if (discussions.length > 0) {
       setTimeout(() => {
-        discussionAPI.getEventDiscussions(eventId).then(res => {
-          const count = res.data.discussions?.length || 0;
-          localStorage.setItem(storageKey, count.toString());
-        }).catch(() => {});
+        updateNotificationCount();
       }, 2000);
     }
 
@@ -110,12 +117,14 @@ function EventDiscussion() {
       fetchDiscussions();
     }, 5000);
 
+    // Update count when leaving
     return () => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
       }
+      updateNotificationCount();
     };
-  }, [eventId, event, user]);
+  }, [eventId, event, user, discussions.length]);
 
   /**
    * POST NEW MESSAGE
@@ -129,8 +138,12 @@ function EventDiscussion() {
 
     try {
       setPosting(true);
-      await discussionAPI.postDiscussion(eventId, { message: newMessage });
+      await discussionAPI.postDiscussion(eventId, { 
+        message: newMessage,
+        isAnnouncement: isAnnouncement 
+      });
       setNewMessage('');
+      setIsAnnouncement(false);
       await fetchDiscussions();
       
       // Scroll to bottom
@@ -215,21 +228,10 @@ function EventDiscussion() {
     }
   };
 
-  /**
-   * CHECK IF CURRENT USER IS ORGANIZER
-   */
-  const isOrganizer = (() => {
-    if (!event || !user) return false;
-    
-    // Handle both populated and unpopulated organizer field
-    const organizerId = typeof event.organizer === 'object' 
-      ? event.organizer?._id 
-      : event.organizer;
-    
-    const result = organizerId === user._id;
-    console.log('isOrganizer check:', { organizerId, userId: user._id, result });
-    return result;
-  })();
+  // isOrganizer is now set from backend response in fetchDiscussions
+  console.log('isOrganizer state:', isOrganizer);
+  console.log('Current user:', user?.id);  // Fixed: user.id not user._id
+  console.log('Event organizer:', event?.organizer);
 
   /**
    * FORMAT TIME
@@ -301,12 +303,21 @@ function EventDiscussion() {
               <div className="messages-list">
                 {discussions.map((discussion) => {
                   console.log('Rendering discussion:', discussion._id, discussion.message);
+                  console.log('isOrganizer for this render:', isOrganizer);
+                  console.log('User ID:', user?.id);  // Fixed: user.id not user._id
+                  console.log('Discussion participant ID:', discussion.participant._id);
+                  const userOwnsMessage = discussion.participant._id?.toString() === user?.id?.toString();
+                  console.log('User owns message:', userOwnsMessage);
+                  console.log('Should show delete button:', (userOwnsMessage || isOrganizer));
                   return (
                   <div 
                     key={discussion._id} 
-                    className={`message-card ${discussion.isPinned ? 'pinned' : ''}`}
+                    className={`message-card ${discussion.isPinned ? 'pinned' : ''} ${discussion.isAnnouncement ? 'announcement' : ''}`}
                   >
-                    {discussion.isPinned && (
+                    {discussion.isAnnouncement && (
+                      <div className="announcement-badge">📢 Announcement</div>
+                    )}
+                    {discussion.isPinned && !discussion.isAnnouncement && (
                       <div className="pinned-badge">📌 Pinned</div>
                     )}
 
@@ -341,7 +352,7 @@ function EventDiscussion() {
                         )}
                         
                         {/* Delete button for own messages or organizer */}
-                        {(discussion.participant._id === user._id || isOrganizer) && (
+                        {(discussion.participant._id?.toString() === user?.id?.toString() || isOrganizer) && (
                           <button 
                             onClick={() => handleDeleteMessage(discussion._id)}
                             className="delete-btn"
@@ -362,7 +373,7 @@ function EventDiscussion() {
                     <div className="message-actions">
                       <button 
                         onClick={() => handleToggleLike(discussion._id)}
-                        className={`like-btn ${discussion.likes.includes(user._id) ? 'liked' : ''}`}
+                        className={`like-btn ${discussion.likes.includes(user?.id) ? 'liked' : ''}`}
                         disabled={likingIds.has(discussion._id)}
                       >
                         ❤️ {discussion.likes.length}
@@ -443,13 +454,26 @@ function EventDiscussion() {
                 disabled={posting}
               />
               <div className="form-footer">
-                <span className="char-count">{newMessage.length}/1000</span>
+                <div className="form-options">
+                  {isOrganizer && (
+                    <label className="announcement-checkbox">
+                      <input 
+                        type="checkbox" 
+                        checked={isAnnouncement}
+                        onChange={(e) => setIsAnnouncement(e.target.checked)}
+                        disabled={posting}
+                      />
+                      <span>📢 Post as Announcement</span>
+                    </label>
+                  )}
+                  <span className="char-count">{newMessage.length}/1000</span>
+                </div>
                 <button 
                   type="submit" 
                   disabled={!newMessage.trim() || posting}
                   className="post-btn"
                 >
-                  {posting ? 'Posting...' : '📤 Post Message'}
+                  {posting ? 'Posting...' : isAnnouncement ? '📢 Post Announcement' : '📤 Post Message'}
                 </button>
               </div>
             </form>

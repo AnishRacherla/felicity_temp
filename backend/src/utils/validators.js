@@ -54,12 +54,23 @@ export const validateEventDates = (startDate, endDate, deadline) => {
   const end = new Date(endDate);
   const regDeadline = new Date(deadline);
 
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || Number.isNaN(regDeadline.getTime())) {
+    return { valid: false, message: "Invalid date values" };
+  }
+
   if (start < now) {
     return { valid: false, message: "Event start date cannot be in the past" };
   }
 
   if (end < start) {
     return { valid: false, message: "Event end date must be after start date" };
+  }
+
+  if (regDeadline > end) {
+    return {
+      valid: false,
+      message: "Registration deadline must be before event end",
+    };
   }
 
   if (regDeadline > start) {
@@ -77,6 +88,61 @@ export const validateEventDates = (startDate, endDate, deadline) => {
   }
 
   return { valid: true };
+};
+
+/**
+ * Validate and normalize custom form fields
+ * @param {Array} fields - Custom form fields
+ * @returns {Object} { valid: Boolean, message?: String, normalized?: Array }
+ */
+export const validateCustomForm = (fields) => {
+  if (!fields) {
+    return { valid: true, normalized: undefined };
+  }
+
+  if (!Array.isArray(fields)) {
+    return { valid: false, message: "Custom form must be an array" };
+  }
+
+  const allowedTypes = ["TEXT", "TEXTAREA", "DROPDOWN", "CHECKBOX", "RADIO", "FILE"];
+
+  const normalized = fields.map((field, index) => {
+    const fieldName = String(field.fieldName || "").trim();
+    const fieldType = String(field.fieldType || "").trim().toUpperCase();
+
+    if (!fieldName) {
+      throw new Error(`Custom form field #${index + 1} must have a name`);
+    }
+
+    if (!allowedTypes.includes(fieldType)) {
+      throw new Error(`Custom form field "${fieldName}" has invalid type`);
+    }
+
+    let options;
+    if (["DROPDOWN", "CHECKBOX", "RADIO"].includes(fieldType)) {
+      if (Array.isArray(field.options)) {
+        options = field.options.map((opt) => String(opt).trim()).filter(Boolean);
+      } else if (typeof field.options === "string") {
+        options = field.options.split(",").map((opt) => opt.trim()).filter(Boolean);
+      } else {
+        options = [];
+      }
+
+      if (!options.length) {
+        throw new Error(`Custom form field "${fieldName}" requires options`);
+      }
+    }
+
+    return {
+      fieldName,
+      fieldType,
+      options,
+      required: Boolean(field.required),
+      order: typeof field.order === "number" ? field.order : index,
+    };
+  });
+
+  return { valid: true, normalized };
 };
 
 /**

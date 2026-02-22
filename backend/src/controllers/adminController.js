@@ -48,17 +48,18 @@ export const createOrganizer = async (req, res) => {
       isActive: true,
     });
 
-    // Send credentials via email
-    try {
-      await sendOrganizerCredentials({
-        to: loginEmail,
-        organizerName,
-        email: loginEmail,
-        password: generatedPassword,
+    // Send credentials via email (async, do not block response)
+    const createEmailPayload = {
+      to: loginEmail,
+      organizerName,
+      email: loginEmail,
+      password: generatedPassword,
+    };
+    setImmediate(() => {
+      sendOrganizerCredentials(createEmailPayload).catch((emailError) => {
+        console.error("Failed to send credentials email:", emailError);
       });
-    } catch (emailError) {
-      console.error("Failed to send credentials email:", emailError);
-    }
+    });
 
     res.status(201).json({
       success: true,
@@ -70,6 +71,7 @@ export const createOrganizer = async (req, res) => {
         password: generatedPassword, // Show password only once
       },
       note: "Credentials have been sent to the organizer's email",
+      emailQueued: true,
     });
   } catch (error) {
     res.status(500).json({
@@ -293,23 +295,25 @@ export const resetOrganizerPassword = async (req, res) => {
     organizer.password = newPassword; // Will be hashed by pre-save hook
     await organizer.save();
 
-    // Send new credentials
-    try {
-      await sendOrganizerCredentials({
-        to: organizer.email,
-        organizerName: organizer.organizerName,
-        email: organizer.email,
-        password: newPassword,
+    // Send new credentials (async, do not block response)
+    const resetEmailPayload = {
+      to: organizer.email,
+      organizerName: organizer.organizerName,
+      email: organizer.email,
+      password: newPassword,
+    };
+    setImmediate(() => {
+      sendOrganizerCredentials(resetEmailPayload).catch((emailError) => {
+        console.error("Failed to send new credentials:", emailError);
       });
-    } catch (emailError) {
-      console.error("Failed to send new credentials:", emailError);
-    }
+    });
 
     res.json({
       success: true,
       message: "Password reset successfully",
       newPassword, // Show only once
       note: "New credentials have been sent to the organizer's email",
+      emailQueued: true,
     });
   } catch (error) {
     res.status(500).json({
@@ -423,23 +427,25 @@ export const approvePasswordResetRequest = async (req, res) => {
     request.processedAt = new Date();
     await request.save();
 
-    // Send credentials to organizer
-    try {
-      await sendOrganizerCredentials({
-        to: organizer.email,
-        organizerName: organizer.organizerName,
-        email: organizer.email,
-        password: newPassword,
+    // Send credentials to organizer (async, do not block response)
+    const approveEmailPayload = {
+      to: organizer.email,
+      organizerName: organizer.organizerName,
+      email: organizer.email,
+      password: newPassword,
+    };
+    setImmediate(() => {
+      sendOrganizerCredentials(approveEmailPayload).catch((emailError) => {
+        console.error("Failed to send password reset email:", emailError);
       });
-    } catch (emailError) {
-      console.error("Failed to send password reset email:", emailError);
-    }
+    });
 
     res.json({
       success: true,
       message: "Password reset request approved",
       request,
       newPassword, // Return password for admin to share
+      emailQueued: true,
     });
   } catch (error) {
     res.status(500).json({

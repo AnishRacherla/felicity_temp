@@ -52,6 +52,10 @@ const discussionSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isAnnouncement: {
+    type: Boolean,
+    default: false
+  },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -62,7 +66,7 @@ const discussionSchema = new mongoose.Schema({
 
 // Index for efficient queries
 discussionSchema.index({ event: 1, createdAt: -1 });
-discussionSchema.index({ event: 1, isPinned: -1, createdAt: -1 });
+discussionSchema.index({ event: 1, isPinned: -1, isAnnouncement: -1, createdAt: -1 });
 
 const Discussion = mongoose.model('Discussion', discussionSchema);
 

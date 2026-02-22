@@ -61,9 +61,19 @@ function CreateEvent() {
       return;
     }
 
+    if (newField.fieldType === 'dropdown') {
+      const options = newField.options.split(',').map(o => o.trim()).filter(Boolean);
+      if (!options.length) {
+        alert('Please add at least one option for dropdown');
+        return;
+      }
+    }
+
     const field = {
       ...newField,
-      options: newField.fieldType === 'dropdown' ? newField.options.split(',').map(o => o.trim()) : undefined
+      options: newField.fieldType === 'dropdown'
+        ? newField.options.split(',').map(o => o.trim()).filter(Boolean)
+        : undefined
     };
 
     setCustomForm([...customForm, field]);
@@ -90,6 +100,40 @@ function CreateEvent() {
     setError('');//clears the previous error message if there is any when the user tries to create a new event again after a failed attempt.
     //  This ensures that the error state is reset and does not show outdated error messages from previous attempts.
 
+    const startDate = new Date(formData.eventStartDate);
+    const endDate = new Date(formData.eventEndDate);
+    const deadlineDate = new Date(formData.registrationDeadline);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime()) || Number.isNaN(deadlineDate.getTime())) {
+      setError('Please provide valid event dates');
+      setCreating(false);
+      return;
+    }
+
+    if (endDate <= startDate) {
+      setError('Event end date must be after event start date');
+      setCreating(false);
+      return;
+    }
+
+    if (deadlineDate > endDate) {
+      setError('Registration deadline must be before event end');
+      setCreating(false);
+      return;
+    }
+
+    if (deadlineDate > startDate) {
+      setError('Registration deadline must be before event start');
+      setCreating(false);
+      return;
+    }
+
+    if (formData.registrationLimit && Number(formData.registrationLimit) <= 0) {
+      setError('Registration limit must be greater than 0');
+      setCreating(false);
+      return;
+    }
+
     try {
       const eventData = {
         ...formData,
@@ -104,15 +148,60 @@ function CreateEvent() {
 
       // Add custom form for normal events
       if (formData.eventType === 'NORMAL' && customForm.length > 0) {
-        eventData.customForm = customForm;
+        const fieldTypeMap = {
+          text: 'TEXT',
+          textarea: 'TEXTAREA',
+          dropdown: 'DROPDOWN',
+          checkbox: 'CHECKBOX',
+          radio: 'RADIO',
+          file: 'FILE'
+        };
+
+        eventData.customForm = customForm.map((field, index) => ({
+          fieldName: field.fieldName?.trim(),
+          fieldType: fieldTypeMap[field.fieldType] || field.fieldType?.toUpperCase(),
+          options: field.options,
+          required: Boolean(field.required),
+          order: typeof field.order === 'number' ? field.order : index
+        }));
       }
 
       // Add merchandise details if type is MERCHANDISE
       if (formData.eventType === 'MERCHANDISE') {
+        const sizes = formData.sizes ? formData.sizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+        const colors = formData.colors ? formData.colors.split(',').map(c => c.trim()).filter(Boolean) : [];
+        const totalStock = parseInt(formData.stock) || 0;
+        
+        // Create variants from sizes and colors combination with proper stock distribution
+        const variants = [];
+        if (sizes.length > 0 && colors.length > 0) {
+          const numVariants = sizes.length * colors.length;
+          const baseStock = Math.floor(totalStock / numVariants);
+          const remainder = totalStock % numVariants;
+          
+          let variantIndex = 0;
+          for (let size of sizes) {
+            for (let color of colors) {
+              // Distribute remainder stock to first few variants
+              const variantStock = variantIndex < remainder ? baseStock + 1 : baseStock;
+              variants.push({
+                name: `${size} - ${color}`,
+                size: size,
+                color: color,
+                price: parseInt(formData.registrationFee) || 0,
+                stock: variantStock
+              });
+              variantIndex++;
+            }
+          }
+        }
+        
         eventData.merchandise = {
-          sizes: formData.sizes ? formData.sizes.split(',').map(s => s.trim()) : [],
-          colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : [],
-          stock: parseInt(formData.stock) || 0
+          sizes,
+          colors,
+          stockQuantity: totalStock,
+          variants: variants.length > 0 ? variants : undefined,
+          purchaseLimit: 1
         };
       }
 

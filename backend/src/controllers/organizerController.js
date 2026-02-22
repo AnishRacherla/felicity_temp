@@ -2,7 +2,7 @@ import Event from "../models/Event.js";
 import Registration from "../models/Registration.js";
 import User from "../models/User.js";
 import PasswordResetRequest from "../models/PasswordResetRequest.js";
-import { validateEventDates } from "../utils/validators.js";
+import { validateCustomForm, validateEventDates } from "../utils/validators.js";
 import { generateQRCode } from "../utils/ticketGenerator.js";
 import { sendRegistrationEmail } from "../utils/emailService.js";
 
@@ -137,12 +137,59 @@ export const updateEvent = async (req, res) => {
       registrationDeadline,
       registrationLimit,
       customForm,
+      eventStartDate,
+      eventEndDate,
     } = req.body;
+
+    const hasCustomForm = typeof customForm !== "undefined";
+
+    if (typeof registrationLimit !== "undefined" && registrationLimit !== null) {
+      if (Number(registrationLimit) <= 0) {
+        return res.status(400).json({ message: "Registration limit must be greater than 0" });
+      }
+    }
+
+    // Cannot edit form if locked
+    if (event.formLocked && hasCustomForm) {
+      return res.status(400).json({
+        message: "Form is locked after first registration",
+      });
+    }
+
+    let normalizedCustomForm;
+    if (hasCustomForm) {
+      try {
+        const formValidation = validateCustomForm(customForm);
+        if (!formValidation.valid) {
+          return res.status(400).json({ message: formValidation.message });
+        }
+        normalizedCustomForm = formValidation.normalized;
+      } catch (validationError) {
+        return res.status(400).json({ message: validationError.message });
+      }
+    }
 
     // Status-based edit restrictions
     if (event.status === "DRAFT") {
       // Draft: Can edit everything
-      Object.assign(event, req.body);
+      const updates = { ...req.body };
+      if (hasCustomForm) {
+        updates.customForm = normalizedCustomForm;
+      }
+
+      Object.assign(event, updates);
+
+      if (event.eventStartDate && event.eventEndDate && event.registrationDeadline) {
+        const dateValidation = validateEventDates(
+          event.eventStartDate,
+          event.eventEndDate,
+          event.registrationDeadline
+        );
+
+        if (!dateValidation.valid) {
+          return res.status(400).json({ message: dateValidation.message });
+        }
+      }
     } else if (event.status === "PUBLISHED") {
       // Published: Limited edits
       if (description) event.description = description;
@@ -150,11 +197,27 @@ export const updateEvent = async (req, res) => {
       // Can only extend deadline, not reduce
       if (registrationDeadline) {
         const newDeadline = new Date(registrationDeadline);
-        if (newDeadline > new Date(event.registrationDeadline)) {
-          event.registrationDeadline = newDeadline;
-        } else {
+        if (Number.isNaN(newDeadline.getTime())) {
+          return res.status(400).json({ message: "Invalid registration deadline" });
+        }
+
+        if (newDeadline <= new Date(event.registrationDeadline)) {
           return res.status(400).json({ message: "Can only extend registration deadline" });
         }
+
+        if (newDeadline > new Date(event.eventStartDate)) {
+          return res.status(400).json({ message: "Registration deadline must be before event start" });
+        }
+
+        if (newDeadline > new Date(event.eventEndDate)) {
+          return res.status(400).json({ message: "Registration deadline must be before event end" });
+        }
+
+        if (newDeadline < new Date()) {
+          return res.status(400).json({ message: "Registration deadline cannot be in the past" });
+        }
+
+        event.registrationDeadline = newDeadline;
       }
       
       // Can only increase limit, not reduce
@@ -171,13 +234,6 @@ export const updateEvent = async (req, res) => {
       // ONGOING/COMPLETED: No edits allowed
       return res.status(400).json({
         message: "Cannot edit event in current status. You can only change status.",
-      });
-    }
-
-    // Cannot edit form if locked
-    if (event.formLocked && customForm) {
-      return res.status(400).json({
-        message: "Form is locked after first registration",
       });
     }
 
@@ -447,27 +503,42 @@ export const approveMerchandisePayment = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const registration = await Registration.findById(id).populate("event");
+    const registration = await Registration.findById(id)
+      .populate({
+        path: "event",
+        populate: { path: "organizer" }
+      })
+      .populate("participant");
 
     if (!registration) {
       return res.status(404).json({ message: "Registration not found" });
     }
 
+    if (!registration.event || !registration.event.organizer) {
+      console.error("Event or organizer missing in registration:", { event: !!registration.event, organizer: !!registration.event?.organizer });
+      return res.status(404).json({ message: "Event not found" });
+    }
+
     // Verify organizer owns this event
-    if (registration.event.organizer.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Unauthorized" });
+    const eventOrganizerId = registration.event.organizer._id ? registration.event.organizer._id.toString() : registration.event.organizer.toString();
+    if (eventOrganizerId !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized - You don't own this event" });
     }
 
     if (registration.paymentStatus !== "PENDING_APPROVAL") {
-      return res.status(400).json({ message: "Payment not pending approval" });
+      return res.status(400).json({ message: "Payment not pending approval or already approved" });
+    }
+
+    // Check if merchandise details exist
+    if (!registration.merchandiseDetails) {
+      return res.status(400).json({ message: "Merchandise details not found" });
     }
 
     // Generate QR code now
-    const participant = await User.findById(registration.participant);
     const qrData = {
       ticketId: registration.ticketId,
-      participantId: participant._id.toString(),
-      participantName: `${participant.firstName} ${participant.lastName}`,
+      participantId: registration.participant._id.toString(),
+      participantName: `${registration.participant.firstName} ${registration.participant.lastName}`,
       eventId: registration.event._id.toString(),
       eventName: registration.event.eventName,
       eventDate: registration.event.eventStartDate,
@@ -482,25 +553,55 @@ export const approveMerchandisePayment = async (req, res) => {
     registration.paymentApprovedAt = new Date();
     await registration.save();
 
-    // Decrement stock
+    // Decrement stock and increment registrations - ensure merchandise object exists
     const event = registration.event;
-    event.merchandise.stockQuantity -= registration.merchandiseDetails.quantity;
-    event.totalRevenue += registration.amountPaid;
+    if (!event.merchandise) {
+      event.merchandise = {};
+    }
+    
+    // Decrement total stockQuantity
+    if (event.merchandise.stockQuantity) {
+      event.merchandise.stockQuantity -= registration.merchandiseDetails.quantity;
+    }
+    
+    // Decrement specific variant stock
+    if (event.merchandise.variants && registration.merchandiseDetails) {
+      let variantToUpdate = event.merchandise.variants.find(v => 
+        v.size === registration.merchandiseDetails.size && 
+        v.color === registration.merchandiseDetails.color
+      );
+      
+      // Fallback: try matching by name format "SIZE - COLOR"
+      if (!variantToUpdate && registration.merchandiseDetails.size && registration.merchandiseDetails.color) {
+        const variantName = `${registration.merchandiseDetails.size} - ${registration.merchandiseDetails.color}`;
+        variantToUpdate = event.merchandise.variants.find(v => v.name === variantName);
+      }
+      
+      if (variantToUpdate) {
+        variantToUpdate.stock = Math.max(0, (variantToUpdate.stock || 0) - registration.merchandiseDetails.quantity);
+      }
+    }
+    
+    // Increment participant count
+    event.currentRegistrations += 1;
+    event.totalRevenue = (event.totalRevenue || 0) + registration.amountPaid;
     await event.save();
 
-    // Send confirmation email
-    try {
-      await sendRegistrationEmail({
-        to: participant.email,
-        participantName: `${participant.firstName} ${participant.lastName}`,
-        eventName: event.eventName,
-        ticketId: registration.ticketId,
-        qrCode,
-        eventDate: event.eventStartDate,
-      });
-    } catch (emailError) {
-      console.error("Email sending failed:", emailError);
-    }
+    // Send confirmation email asynchronously
+    setImmediate(async () => {
+      try {
+        await sendRegistrationEmail({
+          to: registration.participant.email,
+          participantName: `${registration.participant.firstName} ${registration.participant.lastName}`,
+          eventName: event.eventName,
+          ticketId: registration.ticketId,
+          qrCode,
+          eventDate: event.eventStartDate,
+        });
+      } catch (emailError) {
+        console.error("Email sending failed:", emailError);
+      }
+    });
 
     res.json({
       success: true,
@@ -508,6 +609,7 @@ export const approveMerchandisePayment = async (req, res) => {
       registration,
     });
   } catch (error) {
+    console.error("Approval error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to approve payment",
@@ -532,15 +634,23 @@ export const rejectMerchandisePayment = async (req, res) => {
     }
 
     const registration = await Registration.findById(id)
-      .populate("event")
+      .populate({
+        path: "event",
+        populate: { path: "organizer" }
+      })
       .populate("participant", "firstName lastName email");
 
     if (!registration) {
       return res.status(404).json({ message: "Registration not found" });
     }
 
+    if (!registration.event || !registration.event.organizer) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
     // Verify organizer owns this event
-    if (registration.event.organizer.toString() !== req.user._id.toString()) {
+    const eventOrganizerId = registration.event.organizer._id ? registration.event.organizer._id.toString() : registration.event.organizer.toString();
+    if (eventOrganizerId !== req.user._id.toString()) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 

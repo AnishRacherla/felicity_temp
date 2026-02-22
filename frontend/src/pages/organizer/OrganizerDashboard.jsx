@@ -159,6 +159,7 @@ function OrganizerDashboard() {
                       </span>
                       <span style={{
                         background: '#e0e7ff',
+                        color: '#1e3a8a',
                         padding: '4px 12px',
                         borderRadius: '12px',
                         fontSize: '12px',
@@ -174,6 +175,30 @@ function OrganizerDashboard() {
                     <p style={{ color: '#9ca3af', fontSize: '14px', margin: '5px 0' }}>
                       👥 {event.currentRegistrations || 0} / {event.registrationLimit || '∞'} registrations
                     </p>
+                    {event.eventType === 'MERCHANDISE' && event.merchandise && (
+                      <div style={{ marginTop: '10px', padding: '10px', background: '#0f1419', borderRadius: '6px', border: '1px solid rgba(139, 157, 255, 0.15)' }}>
+                        <p style={{ color: '#e5e7eb', fontSize: '13px', fontWeight: '500', margin: '0 0 8px 0' }}>📦 Stock Status:</p>
+                        {event.merchandise.variants && event.merchandise.variants.length > 0 ? (
+                          <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                            {event.merchandise.variants.map((variant, idx) => (
+                              <div key={idx} style={{ margin: '4px 0', display: 'flex', justifyContent: 'space-between' }}>
+                                <span>{variant.size} - {variant.color}:</span>
+                                <span style={{
+                                  color: (variant.stock || 0) > 5 ? '#10b981' : (variant.stock || 0) > 0 ? '#f59e0b' : '#ef4444',
+                                  fontWeight: '500'
+                                }}>
+                                  {variant.stock || 0} units
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p style={{ color: '#9ca3af', fontSize: '12px', margin: '0' }}>
+                            Total: {event.merchandise?.stockQuantity || 0} units
+                          </p>
+                        )}
+                      </div>
+                    )}
                     {event.registrationFee > 0 && (
                       <p style={{ color: '#9ca3af', fontSize: '14px', margin: '5px 0' }}>
                         💰 ₹{event.registrationFee}

@@ -96,6 +96,9 @@ export const sendRegistrationEmail = async ({
   try {
     const transporter = await createTransporter();
 
+    // Extract base64 data from data URL
+    const base64Data = qrCode.replace(/^data:image\/\w+;base64,/, '');
+
     const mailOptions = {
       from: process.env.EMAIL_FROM || "Felicity <noreply@felicity.iiit.ac.in>",
       to,
@@ -122,7 +125,7 @@ export const sendRegistrationEmail = async ({
           
           <div style="text-align: center; margin: 30px 0;">
             <p><strong>Your Ticket QR Code</strong></p>
-            <img src="${qrCode}" alt="Ticket QR Code" style="max-width: 250px; border: 2px solid #E5E7EB; border-radius: 8px; padding: 10px;"/>
+            <img src="cid:qrcode" alt="Ticket QR Code" style="max-width: 250px; border: 2px solid #E5E7EB; border-radius: 8px; padding: 10px;"/>
             <p style="font-size: 12px; color: #6B7280;">Show this QR code at the event venue</p>
           </div>
           
@@ -136,6 +139,14 @@ export const sendRegistrationEmail = async ({
           </p>
         </div>
       `,
+      attachments: [
+        {
+          filename: 'qrcode.png',
+          content: base64Data,
+          encoding: 'base64',
+          cid: 'qrcode' // Content-ID for embedding in HTML
+        }
+      ]
     };
 
     const info = await transporter.sendMail(mailOptions);

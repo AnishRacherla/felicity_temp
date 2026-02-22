@@ -42,10 +42,11 @@ export const getEventDiscussions = async (req, res) => {
     }
 
     // Get all discussions for this event
+    // Sort: Announcements first, then pinned, then by date
     const discussions = await Discussion.find({ event: eventId })
       .populate('participant', 'firstName lastName email')
       .populate('replies.participant', 'firstName lastName')
-      .sort({ isPinned: -1, createdAt: -1 })
+      .sort({ isAnnouncement: -1, isPinned: -1, createdAt: -1 })
       .lean();
 
     res.json({
@@ -67,7 +68,7 @@ export const getEventDiscussions = async (req, res) => {
 export const postDiscussion = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { message } = req.body;
+    const { message, isAnnouncement } = req.body;
 
     // Validate message
     if (!message || message.trim().length === 0) {
@@ -86,6 +87,13 @@ export const postDiscussion = async (req, res) => {
 
     // Check if user is organizer of this event
     const isOrganizer = event.organizer.toString() === req.user._id.toString();
+
+    // Only organizers can post announcements
+    if (isAnnouncement && !isOrganizer) {
+      return res.status(403).json({ 
+        message: 'Only organizers can post announcements' 
+      });
+    }
 
     // Verify user is registered for this event (participants only, organizers can post)
     if (!isOrganizer && req.user.role === 'participant') {
@@ -106,7 +114,8 @@ export const postDiscussion = async (req, res) => {
     const discussion = await Discussion.create({
       event: eventId,
       participant: req.user._id,
-      message: message.trim()
+      message: message.trim(),
+      isAnnouncement: isAnnouncement || false
     });
 
     // Populate and return

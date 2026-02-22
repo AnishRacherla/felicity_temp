@@ -286,9 +286,9 @@
   border-radius: 25px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  background: rgba(139, 157, 255, 0.2);
-  color: #a5b4fc;
-  border: 1px solid rgba(139, 157, 255, 0.4);
+  background: #e0e7ff;
+  color: #1e3a8a;
+  border: 1px solid #c7d2fe;
 }
 
 .featured-title {
