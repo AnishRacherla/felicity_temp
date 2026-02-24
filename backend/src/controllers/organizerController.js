@@ -590,6 +590,8 @@ export const approveMerchandisePayment = async (req, res) => {
     // Send confirmation email asynchronously
     setImmediate(async () => {
       try {
+        console.log(`📧 Attempting to send approval email to: ${registration.participant.email}`);
+        
         await sendRegistrationEmail({
           to: registration.participant.email,
           participantName: `${registration.participant.firstName} ${registration.participant.lastName}`,
@@ -598,8 +600,11 @@ export const approveMerchandisePayment = async (req, res) => {
           qrCode,
           eventDate: event.eventStartDate,
         });
+        
+        console.log(`✅ Approval email sent successfully to ${registration.participant.email}`);
       } catch (emailError) {
-        console.error("Email sending failed:", emailError);
+        console.error("❌ Email sending failed:", emailError.message);
+        console.error("Error details:", emailError);
       }
     });
 

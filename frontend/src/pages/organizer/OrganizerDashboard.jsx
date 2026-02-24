@@ -159,7 +159,7 @@ function OrganizerDashboard() {
                       </span>
                       <span style={{
                         background: '#e0e7ff',
-                        color: '#1e3a8a',
+                          color: '#1e3a8a',
                         padding: '4px 12px',
                         borderRadius: '12px',
                         fontSize: '12px',

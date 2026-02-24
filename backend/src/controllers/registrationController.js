@@ -95,6 +95,9 @@ export const registerForEvent = async (req, res) => {
     // Send email asynchronously (fire-and-forget)
     setImmediate(async () => {
       try {
+        console.log(`📧 Attempting to send registration email to: ${req.user.email}`);
+        console.log(`📧 Event: ${event.eventName}, Ticket: ${ticketId}`);
+        
         await sendRegistrationEmail({
           to: req.user.email,
           participantName: `${req.user.firstName} ${req.user.lastName}`,
@@ -103,8 +106,11 @@ export const registerForEvent = async (req, res) => {
           qrCode,
           eventDate: event.eventStartDate,
         });
+        
+        console.log(`✅ Registration email sent successfully to ${req.user.email}`);
       } catch (emailError) {
-        console.error("Email sending failed:", emailError);
+        console.error("❌ Email sending failed:", emailError.message);
+        console.error("Error details:", emailError);
         // Email failure doesn't affect registration
       }
     });

@@ -56,9 +56,15 @@ export const createOrganizer = async (req, res) => {
       password: generatedPassword,
     };
     setImmediate(() => {
-      sendOrganizerCredentials(createEmailPayload).catch((emailError) => {
-        console.error("Failed to send credentials email:", emailError);
-      });
+      console.log(`📧 Attempting to send organizer credentials to: ${loginEmail}`);
+      sendOrganizerCredentials(createEmailPayload)
+        .then(() => {
+          console.log(`✅ Organizer credentials email sent successfully to ${loginEmail}`);
+        })
+        .catch((emailError) => {
+          console.error("❌ Failed to send credentials email:", emailError.message);
+          console.error("Error details:", emailError);
+        });
     });
 
     res.status(201).json({
